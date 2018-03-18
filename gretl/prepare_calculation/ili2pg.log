@@ -1,0 +1,29 @@
+Info: ili2pg-3.11.3-20180314
+Info: ili2c-4.7.7-20180208
+Info: iox-ili-1.20.4-3bec640e2cb288397dc8f371dab21e91dfe43b36
+Info: java.version 1.8.0_112
+Info: user.name <stefan>
+Info: maxMemory 932352 KB
+Info: currentTime 2018-03-18 19:54:21
+Info: dbschema <afu_generierung_tiefenlayer>
+Info: databaseProduct <PostgreSQL>
+Info: databaseVersion <10.1>
+Info: driverName <PostgreSQL JDBC Driver>
+Info: driverVersion <42.1.4>
+Info: postGISVersion <POSTGIS="2.4.3 r16312" PGSQL="100" GEOS="3.5.0-CAPI-1.9.0 r4084" PROJ="Rel. 4.9.2, 08 September 2015" GDAL="GDAL 1.11.3, released 2015/09/16" LIBXML="2.9.3" LIBJSON="0.11.99" LIBPROTOBUF="1.2.1" RASTER>
+Info: compile models...
+Info: lookup model <SO_AFU_Generierung_Tiefenlayer_20180318> in repository <http://models.geo.admin.ch>
+Info: lookup model <SO_AFU_Generierung_Tiefenlayer_20180318> in repository <../../ili/>
+Info: lookup model <GeometryCHLV95_V1> 2.3 in repository <http://models.geo.admin.ch>
+Info: lookup model <CoordSys> 2.3 in repository <http://models.geo.admin.ch>
+Info: lookup model <CoordSys> 2.3 in repository <../../ili/>
+Info: lookup model <CoordSys> 2.3 in repository <http://models.interlis.ch/>
+Info: lookup model <Units> 2.3 in repository <http://models.geo.admin.ch>
+Info: lookup model <Units> 2.3 in repository <../../ili/>
+Info: lookup model <Units> 2.3 in repository <http://models.interlis.ch/>
+Info: ilifile </Users/stefan/.ilicache/models.interlis.ch/refhb23/CoordSys-20151124.ili>
+Info: ilifile </Users/stefan/.ilicache/models.interlis.ch/refhb23/Units-20120220.ili>
+Info: ilifile </Users/stefan/.ilicache/models.geo.admin.ch/CH/CHBase_Part1_GEOMETRY_20110830.ili>
+Info: ilifile <../../ili/SO_AFU_Generierung_Tiefenlayer_20180318.ili>
+Info: create table structure...
+Info: ...done

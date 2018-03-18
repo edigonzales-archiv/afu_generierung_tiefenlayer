@@ -1,0 +1,63 @@
+import ch.so.agi.gretl.tasks.*
+apply plugin: 'ch.so.agi.gretl'
+
+//def targetDbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com/xanadu2"
+def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis"
+//def targetDbUser = "stefan"
+def targetDbUser = "ddluser"
+//def targetDbPass = System.env.targetDbPass
+def targetDbPass = "ddluser"
+
+def dbSchema = "avt_oevkov_test"
+
+task createNewProject(type: Ili2pgImportSchema) {
+    description = "Erstellt ein neues OevKov-Projekt in der Datenbank mit sämtlichen benötigen leeren Tabellen."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    models = "SO_AVT_OekKov_20180126"
+    modeldir = "http://models.geo.admin.ch;../ili/" 
+    dbschema = "avt_oevkov_test"
+    nameByTopic = true
+    createFk = true
+    createFkIdx = true
+    createUnique = true
+    createNumChecks = true
+    createEnumTabs = true
+    logFile = "ili2pg.log"
+}
+
+task GTFS_CreateStagingTables(type: SqlExecutor) {
+    description = "Temporär: Erstellt leere Staging-Tabellen für GTFS-Import."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/gtfs-create-staging.sql"]
+    sqlParameters = [schema_name: dbSchema]
+
+}
+
+task GTFS_DeleteStagingTables(type: SqlExecutor) {
+    description = "Löscht den Inhalt sämtlicher GTFS-Staging-Tabellen."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/gtfs-delete-staging.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task GTFS_ImportStops(type: CsvImport) {
+    description = "Importiert die GTFS-stops.txt-Datei."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    dataFile = "/Users/stefan/Downloads/gtfsfp20172017-07-18/stops.txt"
+    //dataFile = "stops.txt"
+    schemaName = dbSchema
+	tableName = "gtfs_staging_stop"
+	firstLineIsHeader=true
+    encoding="UTF-8"
+}
+
+task GTFS_ImportStopTimes(type: CsvImport) {
+    description = "Importiert die GTFS-stop_times.txt-Datei."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    dataFile = "/Users/stefan/Downloads/gtfsfp20172017-07-18/stop_times.txt"
+    schemaName = dbSchema
+	tableName = "gtfs_staging_stop_time"
+	firstLineIsHeader=true
+    encoding="UTF-8"
+}
+

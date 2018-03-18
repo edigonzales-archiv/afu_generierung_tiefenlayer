@@ -1,0 +1,34 @@
+INTERLIS 2.3;
+
+!!@ technicalContact=mailto:agi@bd.so.ch
+MODEL SO_AFU_Generierung_Tiefenlayer_20180318 (de)
+AT "http://geo.so.ch/models/AVT"
+VERSION "2018-01-26"  =
+  IMPORTS GeometryCHLV95_V1;
+
+  DOMAIN
+
+    EbeneId = (
+      DHM
+    );
+
+    HKoord = COORD 2589800.00 .. 2645900.00 [INTERLIS.M], 1212100.00 .. 1262400.00 [INTERLIS.M], 0.00 .. 1500.00 [INTERLIS.M];
+
+    Surface3D = SURFACE WITH (STRAIGHTS) VERTEX HKoord WITHOUT OVERLAPS>0.02;
+
+  TOPIC Grundlagen =
+    OID AS INTERLIS.UUIDOID;
+
+    CLASS Datenebene (ABSTRACT) =
+      EbeneId : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.EbeneId;
+      Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.Surface3D;
+      Beschreibung : TEXT*255;
+    END Datenebene;
+
+    CLASS DHM
+    EXTENDS Datenebene =
+    END DHM;
+
+  END Grundlagen;
+
+END SO_AFU_Generierung_Tiefenlayer_20180318.
