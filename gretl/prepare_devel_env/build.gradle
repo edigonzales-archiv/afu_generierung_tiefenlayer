@@ -20,6 +20,14 @@ task createStagingSchemaAndTables(type: SqlExecutor) {
     sqlParameters = [schema_name: dbSchemaStaging]
 }
 
+task importAbfrageperimeterKanton(type: ShpImport) {
+    description = "Import des Abfrageperimeters in die Staging-Tabelle."    
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    schemaName = dbSchemaStaging
+    tableName = "abfrageperimeter_kanton"
+    dataFile = "/Users/stefan/Downloads/gerda/abfrageperimeter_kanton.shp"
+}
+
 // 25D Shapefiles not working :(
 // Use QGIS3 for importing shapefile...
 task importEbeneDatenDHM(type: ShpImport) {

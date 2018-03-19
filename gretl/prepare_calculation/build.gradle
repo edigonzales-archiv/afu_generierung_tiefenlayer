@@ -13,6 +13,7 @@ def targetDbPass = "ddluser"
 def dbSchema = "afu_generierung_tiefenlayer"
 def dbSchemaStaging = "afu_generierung_tiefenlayer_staging"
 
+// in anderen Unterordner "???" 
 task createSchemaAndTables(type: Ili2pgImportSchema) {
     description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
     database = [targetDbUrl, targetDbUser, targetDbPass]
@@ -32,10 +33,20 @@ task createSchemaAndTables(type: Ili2pgImportSchema) {
 }
 
 task copyDataFromStaging(type: Db2Db) {
-    description = "Kopiert das 3D-Modell aus dem Staging in die Modellstruktur."
+    description = "Kopiert das 3D-Modell und weitere Daten aus dem Staging in die Modellstruktur."
     sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
     targetDb = [targetDbUrl, targetDbUser, targetDbPass]
     transferSets = [
             new TransferSet("sql/copy-ebene-daten-dhm.sql", dbSchema + ".grundlagen_dhm", true),
+            new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".grundlagen_abfrageperimeter", true),
     ]
+    // sqlParameters?
+}
+
+// in anderen Unterordner "Berechnungen"
+task createPointGrid25m(type: SqlExecutor) {
+    description = "Generiert das 25m-Punktegrid innerhalb des Abfrageperimeters."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-point-grid-25m.sql"]
+    sqlParameters = [schema_name: dbSchema]
 }
