@@ -11,7 +11,7 @@ allprojects {
             mavenCentral()
         }
         dependencies {
-            classpath group: 'ch.so.agi', name: 'gretl',  version: '1.0.5-SNAPSHOT'
+            classpath group: 'ch.so.agi', name: 'gretl',  version: '1.0.4-SNAPSHOT'
         }
         ext {
             sourceDbUrl = System.env.sourceDbUrl
