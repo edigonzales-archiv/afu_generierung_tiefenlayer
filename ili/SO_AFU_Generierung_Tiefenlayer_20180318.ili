@@ -15,10 +15,7 @@ VERSION "2018-01-26"  =
     HKoord = COORD 2589800.00 .. 2645900.00 [INTERLIS.M], 1212100.00 .. 1262400.00 [INTERLIS.M], 0.00 .. 1500.00 [INTERLIS.M];
 
   TOPIC Berechnungen =
-
-    CLASS Grid25m =
-      Geometrie : MANDATORY GeometryCHLV95_V1.Coord2;
-    END Grid25m;
+    OID AS INTERLIS.UUIDOID;
 
   END Berechnungen;
 
@@ -40,6 +37,10 @@ VERSION "2018-01-26"  =
       Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.Surface3D;
       Beschreibung : TEXT*255;
     END Datenebene;
+
+    CLASS Grid25m =
+      Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.HKoord;
+    END Grid25m;
 
     CLASS DHM
     EXTENDS Datenebene =
