@@ -17,6 +17,8 @@ FROM
   ) AS foo,
   afu_generierung_tiefenlayer.grundlagen_abfrageperimeter AS p
 WHERE
+  ST_X(point) < 2593270
+  AND
   point && p.geometrie
   AND
   ST_Intersects(point, p.geometrie);

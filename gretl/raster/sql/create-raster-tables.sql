@@ -13,6 +13,10 @@ WITH (
 -- 2644737.5 - 2592562.5 = 52175 .. div 25 = 2087
 -- 1261312.5 - 1213737.5 = 47575 .. div 25 = 1903
 
+-- 2593262.5 - 2592562.5 = 700 .. div 25 = 28
+-- 1229862.5 - 1227862.5 = 2000 .. div 25 = 80
+
+
 INSERT INTO ${schema_name}.dhm_25m(rast)
 VALUES
 (
@@ -20,10 +24,14 @@ VALUES
     ST_AddBand(
       -- Make empty raster
       ST_MakeEmptyRaster(
-        2087, -- Raster width x (in pixels)
-        1903, -- Raster width y (in pixels)
-        2592562.5, -- Upper left X coordinate
-        1261312.5, -- Upper left Y coordinate
+        --2087, -- Raster width x (in pixels)
+        --1903, -- Raster width y (in pixels)
+        --2592562.5, -- Upper left X coordinate
+        --1261312.5, -- Upper left Y coordinate
+        28,
+        80,
+        2592562.5,
+        1229862.5,
         25, -- X Cell Resolution (in meters)  
         -25, -- Y Cell Resolution (in meters) 
         0, -- X skew
