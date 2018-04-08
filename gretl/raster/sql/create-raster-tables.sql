@@ -20,18 +20,18 @@ WITH (
 INSERT INTO ${schema_name}.dhm_25m(rast)
 VALUES
 (
-  ST_Tile(
+  --ST_Tile(
     ST_AddBand(
       -- Make empty raster
       ST_MakeEmptyRaster(
-        --2087, -- Raster width x (in pixels)
-        --1903, -- Raster width y (in pixels)
-        --2592562.5, -- Upper left X coordinate
-        --1261312.5, -- Upper left Y coordinate
-        28,
-        80,
-        2592562.5,
-        1229862.5,
+        2087, -- Raster width x (in pixels)
+        1903, -- Raster width y (in pixels)
+        2592562.5, -- Upper left X coordinate
+        1261312.5, -- Upper left Y coordinate
+        --28,
+        --80,
+        --2592562.5,
+        --1229862.5,
         25, -- X Cell Resolution (in meters)  
         -25, -- Y Cell Resolution (in meters) 
         0, -- X skew
@@ -49,12 +49,12 @@ VALUES
           NULL  -- Nodata Value
         )
       ]::addbandarg[]
-    ), 
-    10, -- Number of cells per tile x
-    10, -- Number of cells per tile y
-    FALSE, -- Edge tiles can have different dimensions
-    NULL -- Nodata value
-  )
+    )--, 
+    --10, -- Number of cells per tile x
+    --10, -- Number of cells per tile y
+    --FALSE, -- Edge tiles can have different dimensions
+    --NULL -- Nodata value
+  --)
 );
 
 CREATE INDEX ${schema_name}_dhm25m_rast_gist_idx ON ${schema_name}.dhm_25m USING GIST (ST_ConvexHull(rast));

@@ -1,5 +1,6 @@
 SELECT
-  ebene_id AS ebeneid,
+  --ebene_id AS ebeneid,
+  'DHM' as ebeneid,
   geom AS geometrie,
   beschreibu AS beschreibung
 FROM

@@ -52,7 +52,7 @@ task createPointGrid25m(type: SqlExecutor) {
 }
 
 task updatePointGrid25mDHM(type: SqlExecutor) {
-    description = "Berechnet für jeden 25m-Gridpunkt seine Höhe anhand des importierten DHM."
+    description = "Berechnet für jeden 25m-Gridpunkt seine Höhe anhand des importierten DHM.\n  Achtung: Es entstehen momentan NULL-Geometrien. Diese werden nachträglich gelöscht (in der gleichen SQL-Datei)."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-point-grid-25m-dhm.sql"]
     sqlParameters = [schema_name: dbSchema]

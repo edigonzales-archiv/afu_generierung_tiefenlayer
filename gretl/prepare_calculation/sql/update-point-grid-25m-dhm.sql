@@ -73,3 +73,7 @@ FROM
 )
 AS subquery
 WHERE grid.t_id = subquery.t_id;
+DELETE FROM 
+  ${schema_name}.grundlagen_grid25m
+WHERE
+  geometrie IS NULL;

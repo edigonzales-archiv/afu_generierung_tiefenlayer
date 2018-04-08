@@ -13,12 +13,12 @@ FROM
     WHERE
       colorid = 0
       AND
-      ST_Intersects(ST_SetSRID((ST_POINT(x,y)), 2056), p.geometrie)
+      ST_Within(ST_SetSRID((ST_POINT(x,y)), 2056), p.geometrie)
   ) AS foo,
   afu_generierung_tiefenlayer.grundlagen_abfrageperimeter AS p
 WHERE
-  ST_X(point) < 2593270
-  AND
+  --ST_X(point) < 2593270
+  --AND
   point && p.geometrie
   AND
-  ST_Intersects(point, p.geometrie);
+  ST_Within(point, p.geometrie);
