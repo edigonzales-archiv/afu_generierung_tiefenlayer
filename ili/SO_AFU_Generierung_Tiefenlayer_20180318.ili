@@ -8,10 +8,6 @@ VERSION "2018-01-26"  =
 
   DOMAIN
 
-    EbeneId = (
-      DHM
-    );
-
     HKoord = COORD 2589800.00 .. 2645900.00 [INTERLIS.M], 1212100.00 .. 1262400.00 [INTERLIS.M], 0.00 .. 1500.00 [INTERLIS.M];
 
   TOPIC Berechnungen =
@@ -33,18 +29,27 @@ VERSION "2018-01-26"  =
     END Abfrageperimeter;
 
     CLASS Datenebene (ABSTRACT) =
-      EbeneId : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.EbeneId;
       Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.Surface3D;
       Beschreibung : TEXT*255;
     END Datenebene;
 
-    CLASS Grid25m =
+    /** Regelmässiges Vektor-Punktraster im Abstand von 25 Meter.
+     */
+    CLASS Punktraster25m =
       Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.HKoord;
-    END Grid25m;
+    END Punktraster25m;
 
+    /** Digitales Höhenmodell
+     */
     CLASS DHM
     EXTENDS Datenebene =
     END DHM;
+
+    /** Nagra-Bohrtiefenbeschränkung
+     */
+    CLASS Nagra
+    EXTENDS Datenebene =
+    END Nagra;
 
   END Grundlagen;
 

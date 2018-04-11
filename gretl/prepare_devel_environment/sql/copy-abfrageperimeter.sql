@@ -3,4 +3,4 @@ SELECT
   colorid AS colorid,
   the_geom AS geometrie
 FROM
-  afu_generierung_tiefenlayer_staging.abfrageperimeter_kanton;
+  ${schema_name}.abfrageperimeter_kanton;

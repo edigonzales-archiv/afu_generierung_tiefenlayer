@@ -1,0 +1,108 @@
+import ch.so.agi.gretl.api.*
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+//def targetDbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com/xanadu2"
+//def targetDbUser = "stefan"
+//def targetDbPass = System.env.targetDbPass
+def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis"
+def targetDbUser = "ddluser"
+def targetDbPass = "ddluser"
+
+def dbSchema = "afu_generierung_tiefenlayer"
+def dbSchemaStaging = "afu_generierung_tiefenlayer_staging"
+
+task createStagingSchemaAndTables(type: SqlExecutor) {
+    description = "Erstellt leere Staging-Tabellen für Shapefile-Import."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-staging.sql"]
+    sqlParameters = [schema_name: dbSchemaStaging]
+}
+
+task importQueryPerimeter(type: ShpImport) {
+    description = "Import des Abfrageperimeters in die Staging-Tabelle."    
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    schemaName = dbSchemaStaging
+    tableName = "abfrageperimeter_kanton"
+    dataFile = "/Users/stefan/Downloads/gerda/abfrageperimeter_kanton.shp"
+}
+
+// 25D Shapefiles not working :(
+// Use QGIS3 for importing shapefile...
+task importLayerDTM(type: ShpImport) {
+    description = "Import die DHM-Ebene (ebeneId=100) in die Staging-Tabelle."    
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    schemaName = dbSchemaStaging
+    tableName = "ebene_daten_dhm"
+    dataFile = "/Users/stefan/Downloads/gerda/ebene_daten_dhm.shp"
+}
+
+// 25D Shapefiles not working :(
+// Use QGIS3 for importing shapefile...
+task importLayerNagra() {
+
+}
+
+task createModelSchemaAndTables(type: Ili2pgImportSchema) {
+    description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    models = "SO_AFU_Generierung_Tiefenlayer_20180318"
+    modeldir = "http://models.geo.admin.ch;../../ili/" 
+    dbschema = dbSchema
+    nameByTopic = true
+    createFk = true
+    createFkIdx = true
+    createGeomIdx = true
+    createUnique = true
+    createNumChecks = true
+    createEnumTabs = true
+    strokeArcs = true
+    defaultSrsCode = 2056
+    //logFile = "ili2pg.log"
+}
+
+task copyDataFromStagingIntoModel(type: Db2Db) {
+    description = "Kopiert das 3D-Modell und weitere Daten aus dem Staging in die INTERLIS-Modellstruktur."
+    sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
+    targetDb = [targetDbUrl, targetDbUser, targetDbPass]
+    transferSets = [
+            new TransferSet("sql/copy-ebene-daten-dhm-100.sql", dbSchema + ".grundlagen_dhm", true),
+            new TransferSet("sql/copy-ebene-daten-nagra-114.sql", dbSchema + ".grundlagen_nagra", true),
+            new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".grundlagen_abfrageperimeter", true),
+    ]
+    sqlParameters = [schema_name: dbSchemaStaging]
+}
+
+task createPointGrid25m(type: SqlExecutor) {
+    description = "Generiert das 25m-Punktegrid innerhalb des Abfrageperimeters."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-point-grid-25m.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+// ACHTUNG: dollar sign syntax is broken in gretl
+// workaround: use 3 dollar signs.
+task createHeightInterpolateFunction(type: SqlExecutor) {
+    description = "Erstellt eine PostgreSQL-Funktion, die den z-Wert eines Punktes, der innerhalb eines 25D-Dreieckes liegt, interpoliert."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-height-interpolate-function.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task updateHeightOfPointGrid25m(type: SqlExecutor) {
+    description = "Berechnet für jeden 25m-Gridpunkt seine Höhe anhand des importierten DHM."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-height-point-grid-25m.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task exportXTF(type: Ili2pgExport) {
+    description = "Exportiert sämtliche Daten in eine INTERLIS-Transferdatei."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    models = "SO_AFU_Generierung_Tiefenlayer_20180318"
+    modeldir = "http://models.geo.admin.ch;../../ili/" 
+    dbschema = dbSchema
+    disableValidation = true
+    dataFile = "afu-generierung-tiefenlayer.xtf"
+}
