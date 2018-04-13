@@ -82,9 +82,9 @@ task copyDataFromStagingIntoModel(type: Db2Db) {
     sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
     targetDb = [targetDbUrl, targetDbUser, targetDbPass]
     transferSets = [
-            //new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".abfrageperimeter_abfrageperimeter", true),        
-            //new TransferSet("sql/copy-ebene-daten-dhm-100.sql", dbSchema + ".datenebenen_dhm", true),
-            //new TransferSet("sql/copy-ebene-daten-lockergestein-basis-101.sql", dbSchema + ".datenebenen_lockergestein_basis", true),
+            new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".abfrageperimeter_abfrageperimeter", true),        
+            new TransferSet("sql/copy-ebene-daten-dhm-100.sql", dbSchema + ".datenebenen_dhm", true),
+            new TransferSet("sql/copy-ebene-daten-lockergestein-basis-101.sql", dbSchema + ".datenebenen_lockergestein_basis", true),
             //new TransferSet("sql/copy-ebene-daten-hauptrogenstein-top-106.sql", dbSchema + ".datenebenen_hauptrogenstein_top", true),
             new TransferSet("sql/copy-ebene-daten-nagra-114.sql", dbSchema + ".datenebenen_nagra", true),
     ]
