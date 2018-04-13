@@ -8,19 +8,9 @@ VERSION "2018-01-26"  =
 
   DOMAIN
 
-    HKoord = COORD 2589800.00 .. 2645900.00 [INTERLIS.M], 1212100.00 .. 1262400.00 [INTERLIS.M], 0.00 .. 1500.00 [INTERLIS.M];
+    HKoord = COORD 2589800.00 .. 2645900.00 [INTERLIS.M], 1212100.00 .. 1262400.00 [INTERLIS.M], -1500.00 .. 1500.00 [INTERLIS.M];
 
-  TOPIC Berechnungen =
-    OID AS INTERLIS.UUIDOID;
-
-  END Berechnungen;
-
-  DOMAIN
-
-    Surface3D = SURFACE WITH (STRAIGHTS) VERTEX HKoord WITHOUT OVERLAPS>0.02;
-
-  TOPIC Grundlagen =
-    OID AS INTERLIS.UUIDOID;
+  TOPIC Abfrageperimeter =
 
     CLASS Abfrageperimeter =
       dn : 0 .. 1000000;
@@ -28,16 +18,48 @@ VERSION "2018-01-26"  =
       Geometrie : MANDATORY GeometryCHLV95_V1.MultiSurface;
     END Abfrageperimeter;
 
+  END Abfrageperimeter;
+
+  DOMAIN
+
+    Surface3D = SURFACE WITH (STRAIGHTS) VERTEX HKoord WITHOUT OVERLAPS>0.02;
+
+  /** Regelmässige Vektor-Punktraster im Abstand von 25 Meter.
+   */
+  TOPIC Punktraster25m =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Grundlagepunktraster für weitere Punktraster der verschiedenen Ebenen.
+     */
+    CLASS Abfrageperimeter =
+      Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.HKoord;
+    END Abfrageperimeter;
+
+    CLASS DHM
+    EXTENDS Abfrageperimeter =
+    END DHM;
+
+    CLASS Hauptrogenstein_Top
+    EXTENDS Abfrageperimeter =
+    END Hauptrogenstein_Top;
+
+    CLASS Lockergestein_Basis
+    EXTENDS Abfrageperimeter =
+    END Lockergestein_Basis;
+
+    CLASS Nagra
+    EXTENDS Abfrageperimeter =
+    END Nagra;
+
+  END Punktraster25m;
+
+  TOPIC Datenebenen =
+    OID AS INTERLIS.UUIDOID;
+
     CLASS Datenebene (ABSTRACT) =
       Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.Surface3D;
       Beschreibung : TEXT*255;
     END Datenebene;
-
-    /** Regelmässiges Vektor-Punktraster im Abstand von 25 Meter.
-     */
-    CLASS Punktraster25m =
-      Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.HKoord;
-    END Punktraster25m;
 
     /** Digitales Höhenmodell
      */
@@ -45,12 +67,20 @@ VERSION "2018-01-26"  =
     EXTENDS Datenebene =
     END DHM;
 
+    CLASS Hauptrogenstein_Top
+    EXTENDS Datenebene =
+    END Hauptrogenstein_Top;
+
+    CLASS Lockergestein_Basis
+    EXTENDS Datenebene =
+    END Lockergestein_Basis;
+
     /** Nagra-Bohrtiefenbeschränkung
      */
     CLASS Nagra
     EXTENDS Datenebene =
     END Nagra;
 
-  END Grundlagen;
+  END Datenebenen;
 
 END SO_AFU_Generierung_Tiefenlayer_20180318.

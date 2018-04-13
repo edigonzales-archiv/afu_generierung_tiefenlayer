@@ -13,7 +13,12 @@ def targetDbPass = "ddluser"
 def dbSchema = "afu_generierung_tiefenlayer"
 def dbSchemaStaging = "afu_generierung_tiefenlayer_staging"
 
+def IMPORT_EXPORT_GROUP = "Import/Export"
+def STAGING_GROUP = "Staging"
+def POINTGRID_GROUP = "Point grid"
+
 task createStagingSchemaAndTables(type: SqlExecutor) {
+    group = STAGING_GROUP    
     description = "Erstellt leere Staging-Tabellen für Shapefile-Import."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-staging.sql"]
@@ -21,6 +26,7 @@ task createStagingSchemaAndTables(type: SqlExecutor) {
 }
 
 task importQueryPerimeter(type: ShpImport) {
+    group = STAGING_GROUP    
     description = "Import des Abfrageperimeters in die Staging-Tabelle."    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     schemaName = dbSchemaStaging
@@ -31,6 +37,7 @@ task importQueryPerimeter(type: ShpImport) {
 // 25D Shapefiles not working :(
 // Use QGIS3 for importing shapefile...
 task importLayerDTM(type: ShpImport) {
+    group = STAGING_GROUP    
     description = "Import die DHM-Ebene (ebeneId=100) in die Staging-Tabelle."    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     schemaName = dbSchemaStaging
@@ -41,8 +48,15 @@ task importLayerDTM(type: ShpImport) {
 // 25D Shapefiles not working :(
 // Use QGIS3 for importing shapefile...
 task importLayerNagra() {
-
+    group = STAGING_GROUP    
 }
+
+// 25D Shapefiles not working :(
+// Use QGIS3 for importing shapefile...
+task importLayerHauptrogensteinTop() {
+    group = STAGING_GROUP    
+}
+
 
 task createModelSchemaAndTables(type: Ili2pgImportSchema) {
     description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
@@ -59,6 +73,7 @@ task createModelSchemaAndTables(type: Ili2pgImportSchema) {
     createEnumTabs = true
     strokeArcs = true
     defaultSrsCode = 2056
+    smart2Inheritance = true
     //logFile = "ili2pg.log"
 }
 
@@ -67,37 +82,74 @@ task copyDataFromStagingIntoModel(type: Db2Db) {
     sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
     targetDb = [targetDbUrl, targetDbUser, targetDbPass]
     transferSets = [
-            new TransferSet("sql/copy-ebene-daten-dhm-100.sql", dbSchema + ".grundlagen_dhm", true),
-            new TransferSet("sql/copy-ebene-daten-nagra-114.sql", dbSchema + ".grundlagen_nagra", true),
-            new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".grundlagen_abfrageperimeter", true),
+            //new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".abfrageperimeter_abfrageperimeter", true),        
+            //new TransferSet("sql/copy-ebene-daten-dhm-100.sql", dbSchema + ".datenebenen_dhm", true),
+            //new TransferSet("sql/copy-ebene-daten-lockergestein-basis-101.sql", dbSchema + ".datenebenen_lockergestein_basis", true),
+            //new TransferSet("sql/copy-ebene-daten-hauptrogenstein-top-106.sql", dbSchema + ".datenebenen_hauptrogenstein_top", true),
+            new TransferSet("sql/copy-ebene-daten-nagra-114.sql", dbSchema + ".datenebenen_nagra", true),
     ]
     sqlParameters = [schema_name: dbSchemaStaging]
 }
 
-task createPointGrid25m(type: SqlExecutor) {
+task createFunctionMakeGrid(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Erstellt eine PostgreSQL-Funktion, die ein regelmässiges Punktraster innerhalb einer Geometrie erstellt."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-makegrid-function.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task createFunctionInterpolateZvalue(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Erstellt eine PostgreSQL-Funktion, die den Z-Wert eines Punktes, der innerhalb eines 25D-Dreieckes liegt, interpoliert."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-interpolate-z-value-function.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task createQueryPerimeterPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
     description = "Generiert das 25m-Punktegrid innerhalb des Abfrageperimeters."
     database = [targetDbUrl, targetDbUser, targetDbPass]
-    sqlFiles = ["sql/create-point-grid-25m.sql"]
+    sqlFiles = ["sql/create-point-grid-25m-query-perimeter.sql"]
     sqlParameters = [schema_name: dbSchema]
 }
 
-// ACHTUNG: dollar sign syntax is broken in gretl
-// workaround: use 3 dollar signs.
-task createHeightInterpolateFunction(type: SqlExecutor) {
-    description = "Erstellt eine PostgreSQL-Funktion, die den z-Wert eines Punktes, der innerhalb eines 25D-Dreieckes liegt, interpoliert."
+task createDhmPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Generiert das 25m-Punktegrid innerhalb des DHM."
     database = [targetDbUrl, targetDbUser, targetDbPass]
-    sqlFiles = ["sql/create-height-interpolate-function.sql"]
+    sqlFiles = ["sql/create-point-grid-25m-dhm.sql"]
     sqlParameters = [schema_name: dbSchema]
 }
 
-task updateHeightOfPointGrid25m(type: SqlExecutor) {
-    description = "Berechnet für jeden 25m-Gridpunkt seine Höhe anhand des importierten DHM."
+// TODO: Testen, ob man das gleich mit der Erstellen der Punkte erledigen kann.
+task updateDhmPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Berechnet die Z-Werte des DHM-Punktrasters."
     database = [targetDbUrl, targetDbUser, targetDbPass]
-    sqlFiles = ["sql/update-height-point-grid-25m.sql"]
+    sqlFiles = ["sql/update-point-grid-25m-dhm.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task createNagraPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Generiert das 25m-Punktegrid innerhalb des Nagra-Perimeters."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-point-grid-25m-nagra.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task updateNagraPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Berechnet die Z-Werte des Nagra-Punktrasters.."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-point-grid-25m-nagra.sql"]
     sqlParameters = [schema_name: dbSchema]
 }
 
 task exportXTF(type: Ili2pgExport) {
+    group = IMPORT_EXPORT_GROUP
     description = "Exportiert sämtliche Daten in eine INTERLIS-Transferdatei."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     models = "SO_AFU_Generierung_Tiefenlayer_20180318"
@@ -105,4 +157,15 @@ task exportXTF(type: Ili2pgExport) {
     dbschema = dbSchema
     disableValidation = true
     dataFile = "afu-generierung-tiefenlayer.xtf"
+}
+
+task importXTF(type: Ili2pgImport) {
+    group = IMPORT_EXPORT_GROUP
+    description = "Import die Grundlagedaten (als INTERLIS-Transferdatei) in ein bestehenden Schema."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    models = "SO_AFU_Generierung_Tiefenlayer_20180318"
+    modeldir = "http://models.geo.admin.ch;../../ili/" 
+    dbschema = dbSchema
+    dataFile = "afu-generierung-tiefenlayer.xtf"
+    disableValidation = true
 }
