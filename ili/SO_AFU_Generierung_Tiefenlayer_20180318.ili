@@ -27,7 +27,6 @@ VERSION "2018-01-26"  =
   /** Regelmässige Vektor-Punktraster im Abstand von 25 Meter.
    */
   TOPIC Punktraster25m =
-    OID AS INTERLIS.UUIDOID;
 
     /** Grundlagepunktraster für weitere Punktraster der verschiedenen Ebenen.
      */
@@ -54,7 +53,6 @@ VERSION "2018-01-26"  =
   END Punktraster25m;
 
   TOPIC Datenebenen =
-    OID AS INTERLIS.UUIDOID;
 
     CLASS Datenebene (ABSTRACT) =
       Geometrie : MANDATORY SO_AFU_Generierung_Tiefenlayer_20180318.Surface3D;

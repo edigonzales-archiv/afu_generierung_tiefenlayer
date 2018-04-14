@@ -12,10 +12,13 @@ def targetDbPass = "ddluser"
 
 def dbSchema = "afu_generierung_tiefenlayer"
 def dbSchemaStaging = "afu_generierung_tiefenlayer_staging"
+def dbSchemaRaster = "afu_generierung_tiefenlayer_raster"
 
 def IMPORT_EXPORT_GROUP = "Import/Export"
 def STAGING_GROUP = "Staging"
 def POINTGRID_GROUP = "Point grid"
+def DATAMODEL_GROUP = "Data model"
+def RASTER_GROUP = "Raster"
 
 task createStagingSchemaAndTables(type: SqlExecutor) {
     group = STAGING_GROUP    
@@ -59,6 +62,7 @@ task importLayerHauptrogensteinTop() {
 
 
 task createModelSchemaAndTables(type: Ili2pgImportSchema) {
+    group = DATAMODEL_GROUP
     description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     models = "SO_AFU_Generierung_Tiefenlayer_20180318"
@@ -78,6 +82,7 @@ task createModelSchemaAndTables(type: Ili2pgImportSchema) {
 }
 
 task copyDataFromStagingIntoModel(type: Db2Db) {
+    group = DATAMODEL_GROUP
     description = "Kopiert das 3D-Modell und weitere Daten aus dem Staging in die INTERLIS-Modellstruktur."
     sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
     targetDb = [targetDbUrl, targetDbUser, targetDbPass]
@@ -148,6 +153,22 @@ task updateNagraPointGrid25m(type: SqlExecutor) {
     sqlParameters = [schema_name: dbSchema]
 }
 
+task createLockergesteinBasisPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Generiert das 25m-Punktegrid der Ebene Lockergestein_Basis."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-point-grid-25m-lockergestein-basis.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
+task updateLockergesteinBasisPointGrid25m(type: SqlExecutor) {
+    group = POINTGRID_GROUP    
+    description = "Berechnet die Z-Werte des Lockergestein-Basis-Punktrasters.."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-point-grid-25m-lockergestein-basis.sql"]
+    sqlParameters = [schema_name: dbSchema]
+}
+
 task exportXTF(type: Ili2pgExport) {
     group = IMPORT_EXPORT_GROUP
     description = "Exportiert sämtliche Daten in eine INTERLIS-Transferdatei."
@@ -168,4 +189,60 @@ task importXTF(type: Ili2pgImport) {
     dbschema = dbSchema
     dataFile = "afu-generierung-tiefenlayer.xtf"
     disableValidation = true
+}
+
+task createRasterSchema(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Erstellt das Datenbankschema für die Raster-Tabellen."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-schema.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task createRasterTableDHM25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Erstellt das Raster-DB-Tabelle für das 25m-DHM."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-table-25m-dhm.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task updateRasterTableDHM25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-DHM-Rastertabelle."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-raster-table-25m-dhm.sql"]
+    sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
+}
+
+task createRasterTableNagra25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Erstellt das Raster-DB-Tabelle für die 25m-Nagra-Ebene."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-table-25m-nagra.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task updateRasterTableNagra25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-Nagra-Rastertabelle."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-raster-table-25m-nagra.sql"]
+    sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
+}
+
+task createRasterTableLockergesteinBasis25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Erstellt das Raster-DB-Tabelle für die 25m-Nagra-Ebene."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-table-25m-lockergestein-basis.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task updateRasterTableLockergesteinBasis25m(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-Lockergestein-Basis-Rastertabelle."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-raster-table-25m-lockergestein-basis.sql"]
+    sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
 }

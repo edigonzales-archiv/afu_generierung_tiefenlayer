@@ -5,7 +5,7 @@
 ```
 
 ```
-java -jar ~/apps/ilivalidator-1.8.1/ilivalidator-1.8.1.jar --modeldir "http://models.geo.admin.ch;../../ili/" afu-generierung-tiefenlayer.xtf
+java -jar ~/apps/ilivalidator-1.8.1/ilivalidator-1.8.1.jar --log fubar.log --modeldir "http://models.geo.admin.ch;../../ili/" afu-generierung-tiefenlayer.xtf
 ```
 
 
@@ -28,35 +28,14 @@ Error: line 3265805: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockerg
 wkt_geom	t_id	t_ili_tid	beschreibung
 PolygonZ ((2610925.37695313012227416 1231500.33007812988944352 465.39648438000000397, 2610950.37695313012227416 1231500.33007812988944352 463.64080811000002313, 2610975.37695313012227416 1231500.33007812988944352 461.8910217299999772, 2610925.37695313012227416 1231500.33007812988944352 465.39648438000000397))	5334127	2a3e8578-b52b-4324-8ee5-e3aefc77d8d2	
 
-Unique  (cost=21653.28..21833.28 rows=200 width=32)
-  ->  Sort  (cost=21653.28..21743.28 rows=36000 width=32)
-        Sort Key: (((st_dump(afu_generierung_tiefenlayer.makegrid(abfrageperimeter_abfrageperimeter.geometrie, 1000)))).geom)
-        ->  Result  (cost=0.00..18568.85 rows=36000 width=32)
-              ->  ProjectSet  (cost=0.00..208.85 rows=36000 width=32)
-                    ->  Seq Scan on abfrageperimeter_abfrageperimeter  (cost=0.00..10.68 rows=36 width=29454)
-                          Filter: (colorid = 0)
+Error: line 3791896: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 1250091: failed to validate polygon
+Error: line 3791896: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 1250091:   intersections
+
+<SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis TID="1250091"><Geometrie><SURFACE><BOUNDARY><POLYLINE><COORD><C1>2592625.33984375</C1><C2>1226825.44238281</C2><C3>675.02288818</C3></COORD><COORD><C1>2592675.33984375</C1><C2>1226825.44238281</C2><C3>675.02954102</C3></COORD><COORD><C1>2592700.33984375</C1><C2>1226825.44238281</C2><C3>675.03436279</C3></COORD><COORD><C1>2592625.33984375</C1><C2>1226825.44238281</C2><C3>675.02288818</C3></COORD></POLYLINE></BOUNDARY></SURFACE></Geometrie></SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis>
 
 
-Result  (cost=0.00..18568.85 rows=36000 width=32)
-  ->  ProjectSet  (cost=0.00..208.85 rows=36000 width=32)
-        ->  Seq Scan on abfrageperimeter_abfrageperimeter  (cost=0.00..10.68 rows=36 width=29454)
-              Filter: (colorid = 0)
 
+Error: line 4866732: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 2324927: failed to validate polygon
+Error: line 4866732: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 2324927:   intersections
 
-              -- keine Duplikate (abfragegeometrie war doppelt)
-/*
--- TODO: Delete duplicates (MUST BE FIXED IN CREATION QUERY!)
-DELETE FROM ${schema_name}.punktraster25m_abfrageperimeter
-WHERE t_id IN
-(
-  SELECT 
-    t_id 
-  FROM
-  (
-    SELECT t_id, ROW_NUMBER() OVER(PARTITION BY geometrie ORDER BY t_id asc) AS Row,
-    geometrie FROM ONLY ${schema_name}.punktraster25m_abfrageperimeter
-  ) dups 
-  WHERE
-    dups.Row > 1
-);
-*/
+<SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis TID="2324927"><Geometrie><SURFACE><BOUNDARY><POLYLINE><COORD><C1>2610925.37695313</C1><C2>1231500.33007813</C2><C3>465.39648438</C3></COORD><COORD><C1>2610950.37695313</C1><C2>1231500.33007813</C2><C3>463.64080811</C3></COORD><COORD><C1>2610975.37695313</C1><C2>1231500.33007813</C2><C3>461.89102173</C3></COORD><COORD><C1>2610925.37695313</C1><C2>1231500.33007813</C2><C3>465.39648438</C3></COORD></POLYLINE></BOUNDARY></SURFACE></Geometrie></SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis>
