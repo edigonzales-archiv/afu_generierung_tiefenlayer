@@ -14,6 +14,10 @@ ogr2ogr -f "ESRI Shapefile" nagra_114.shp PG:"host=geodb-t.verw.rootso.org user=
 ```
 
 
+* Abfrageperimeter scheint mir ein wenig verfrickelt zu sein.
+* ein paar Geometriefehler
+* bei gewissen ebenen (id=xxx) überlappen sich die Dreiecke?!
+
 
 Error: line 2190969: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 8923e7fb-7631-4c92-84ab-edcd9b995d29: failed to validate polygon
 Error: line 2190969: SO_AFU_Generierung_Tiefenlayer_20180318.Datenebenen.Lockergestein_Basis: tid 8923e7fb-7631-4c92-84ab-edcd9b995d29:   intersections

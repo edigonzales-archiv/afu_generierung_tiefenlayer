@@ -54,6 +54,15 @@ task importLayerNagra() {
     group = STAGING_GROUP    
 }
 
+task importGewaesserchutzzonen(type: ShpImport) {
+    group = STAGING_GROUP    
+    description = "Import die Gewässerschutzzonen in die Staging-Tabelle."    
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    schemaName = dbSchemaStaging
+    tableName = "externe_daten_gws"
+    dataFile = "/Users/stefan/Downloads/gerda/public_aww_gszoar.shp"
+}
+
 // 25D Shapefiles not working :(
 // Use QGIS3 for importing shapefile...
 task importLayerHauptrogensteinTop() {
@@ -196,7 +205,25 @@ task createRasterSchema(type: SqlExecutor) {
     description = "Erstellt das Datenbankschema für die Raster-Tabellen."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-schema.sql"]
+    sqlParameters = [schema_name_raster: dbSchemaRaster]
+}
+
+task createRasterExternGws(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Erstellt Raster-Tabelle für Gewässerschutzzonen."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-table-extern-gws.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+// Muss nach DHM aufgerufen werden, weil es als Referenz dient.
+// TODO.
+task updateRasterExternGws(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Rasterize die GWS-Vektordaten in eine binäre Raster-Tabelle."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-raster-table-extern-gws.sql"]
+    sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name_staging: dbSchemaStaging]
 }
 
 task createRasterTableDHM25m(type: SqlExecutor) {
@@ -245,4 +272,28 @@ task updateRasterTableLockergesteinBasis25m(type: SqlExecutor) {
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-25m-lockergestein-basis.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
+}
+
+task createFunctionStupidCallback(type: SqlExecutor) {
+    group = RASTER_GROUP    
+    description = "Erstellt eine Dummy-Raster-MapAlgebra-Callback-Funktion."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-makegrid-function.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task createRasterTableStupidResult(type: SqlExecutor) {
+    group = RASTER_GROUP    
+    description = "Erstellt eine Raster-Tabelle für die Dummy-Callback-Funktion."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/create-raster-table-stupid-result.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
+}
+
+task updateRasterTableStupidResult(type: SqlExecutor) {
+    group = RASTER_GROUP
+    description = "Berechnet die Bohrtiefe anhand einer Callback-Funktion.\n Achtung: der Extent etc. wird noch verändert. Muss wohl mit MapAlgebra-Einbrennverfahren gemacht werden.\n Und nicht mit ST_AsRaster()."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFiles = ["sql/update-raster-table-stupid-result.sql"]
+    sqlParameters = [schema_name: dbSchemaRaster]
 }

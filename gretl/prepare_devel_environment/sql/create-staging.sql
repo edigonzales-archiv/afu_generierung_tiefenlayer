@@ -39,3 +39,17 @@ CREATE TABLE IF NOT EXISTS ${schema_name}.abfrageperimeter_kanton (
 WITH (
 	OIDS=FALSE
 );
+
+CREATE TABLE IF NOT EXISTS ${schema_name}.externe_daten_gws (
+	t_id SERIAL PRIMARY KEY,
+	zone varchar,
+	new_date date,
+	archive_da date,
+	archive integer,
+	rrbnr integer,
+	rrb_date date,
+	the_geom geometry(MultiPolygon, 2056)
+)
+WITH (
+	OIDS=FALSE
+);
