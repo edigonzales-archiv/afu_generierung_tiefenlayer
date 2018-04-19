@@ -216,11 +216,9 @@ task createRasterExternGws(type: SqlExecutor) {
     sqlParameters = [schema_name: dbSchemaRaster]
 }
 
-// Muss nach DHM aufgerufen werden, weil es als Referenz dient.
-// TODO.
 task updateRasterExternGws(type: SqlExecutor) {
     group = RASTER_GROUP
-    description = "Rasterize die GWS-Vektordaten in eine binäre Raster-Tabelle."
+    description = "Rasterisiert die GWS-Vektordaten in eine binäre Raster-Tabelle.\n Achtung: Verwendet DHM-Rastertabelle als Referenz \n und muss aus diesem Grund *nach* dem Erzeugen und Updaten dieser Tabelle erstellt werden."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-extern-gws.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name_staging: dbSchemaStaging]
@@ -292,7 +290,7 @@ task createRasterTableStupidResult(type: SqlExecutor) {
 
 task updateRasterTableStupidResult(type: SqlExecutor) {
     group = RASTER_GROUP
-    description = "Berechnet die Bohrtiefe anhand einer Callback-Funktion.\n Achtung: der Extent etc. wird noch verändert. Muss wohl mit MapAlgebra-Einbrennverfahren gemacht werden.\n Und nicht mit ST_AsRaster()."
+    description = "Berechnet die Bohrtiefe anhand einer Callback-Funktion."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-stupid-result.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]

@@ -13,6 +13,16 @@ java -jar ~/apps/ilivalidator-1.8.1/ilivalidator-1.8.1.jar --log fubar.log --mod
 ogr2ogr -f "ESRI Shapefile" nagra_114.shp PG:"host=geodb-t.verw.rootso.org user=fubar dbname=sogis password=fubar" -sql "SELECT * FROM entscheidung.ebene_daten WHERE ebene_id = 114"
 ```
 
+```
+ALTER DATABASE mygisdb SET postgis.gdal_enabled_drivers TO 'GTiff PNG JPEG';
+```
+
+In Vagrant-Box ausführen:
+```
+gdal_translate -of GTiff PG:"host=localhost port=5432 dbname=sogis user=ddluser password=ddluser schema=afu_generierung_tiefenlayer_raster table=raster25m_nagra mode=2" test.tiff
+
+```
+
 
 * Abfrageperimeter scheint mir ein wenig verfrickelt zu sein.
 * ein paar Geometriefehler
