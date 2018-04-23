@@ -204,7 +204,7 @@ task createRasterSchema(type: SqlExecutor) {
     description = "Erstellt das Datenbankschema für die Raster-Tabellen."
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-schema.sql"]
-    sqlParameters = [schema_name_raster: dbSchemaRaster]
+    sqlParameters = [schema_name: dbSchemaRaster]
 }
 
 task createRasterExternGws(type: SqlExecutor) {
@@ -275,7 +275,7 @@ task createFunctionStupidCallback(type: SqlExecutor) {
     group = RASTER_GROUP    
     description = "Erstellt eine Dummy-Raster-MapAlgebra-Callback-Funktion."
     database = [targetDbUrl, targetDbUser, targetDbPass]
-    sqlFiles = ["sql/create-makegrid-function.sql"]
+    sqlFiles = ["sql/create-stupic-callback-function.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
 }
 

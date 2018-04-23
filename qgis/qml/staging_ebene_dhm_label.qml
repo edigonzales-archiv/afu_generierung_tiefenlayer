@@ -33,18 +33,18 @@
     <sizescale/>
   </renderer-v2>
   <labeling type="rule-based">
-    <rules key="{3139aab7-a1cb-4869-9338-2bb79f0fea8f}">
-      <rule key="{9b18c0a2-eee3-4ef8-a04a-3cff893616a0}" description="Vertex 1">
+    <rules key="{b208b283-5987-497c-90a3-b626ae392cd0}">
+      <rule scalemaxdenom="3000" key="{06683945-5b16-4f95-9d0d-8a65b2738402}" scalemindenom="1" description="Vertex 1">
         <settings>
           <text-style fontUnderline="0" namedStyle="Regular" useSubstitutions="0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSizeUnit="Point" textOpacity="1" previewBkgrdColor="#ffffff" fontSize="15" textColor="35,139,69,255" fontWeight="50" fontItalic="0" fontStrikeout="0" blendMode="0" fontCapitals="0" fontLetterSpacing="0" fieldName="format_number( z( point_n( $geometry, 1)),2)" fontFamily="Zurich" isExpression="1" fontWordSpacing="0" multilineHeight="1">
             <text-buffer bufferDraw="1" bufferColor="255,255,255,255" bufferBlendMode="0" bufferOpacity="1" bufferJoinStyle="128" bufferSizeUnits="MM" bufferSize="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="1"/>
-            <background shapeSizeX="0" shapeSizeY="0" shapeSizeUnit="MM" shapeFillColor="255,255,255,255" shapeBorderWidthUnit="MM" shapeSVGFile="" shapeRadiiX="0" shapeOffsetY="0" shapeRotationType="0" shapeDraw="0" shapeBorderColor="128,128,128,255" shapeOpacity="1" shapeBorderWidth="0" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeRadiiY="0" shapeRotation="0" shapeBlendMode="0" shapeOffsetX="0" shapeRadiiUnit="MM" shapeType="0" shapeSizeType="0" shapeOffsetUnit="MM" shapeJoinStyle="64"/>
+            <background shapeSizeX="0.5" shapeSizeY="0.5" shapeSizeUnit="MM" shapeFillColor="255,255,255,255" shapeBorderWidthUnit="MM" shapeSVGFile="" shapeRadiiX="0" shapeOffsetY="0" shapeRotationType="0" shapeDraw="0" shapeBorderColor="128,128,128,255" shapeOpacity="1" shapeBorderWidth="0" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeRadiiY="0" shapeRotation="0" shapeBlendMode="0" shapeOffsetX="0" shapeRadiiUnit="MM" shapeType="0" shapeSizeType="0" shapeOffsetUnit="MM" shapeJoinStyle="64"/>
             <shadow shadowOpacity="0.7" shadowDraw="0" shadowRadiusMapUnitScale="3x:0,0,0,0,0,0" shadowScale="100" shadowUnder="0" shadowOffsetAngle="135" shadowOffsetDist="1" shadowOffsetUnit="MM" shadowBlendMode="6" shadowOffsetGlobal="1" shadowOffsetMapUnitScale="3x:0,0,0,0,0,0" shadowRadiusAlphaOnly="0" shadowColor="0,0,0,255" shadowRadiusUnit="MM" shadowRadius="1.5"/>
             <substitutions/>
           </text-style>
           <text-format leftDirectionSymbol="&lt;" plussign="0" multilineAlign="4294967295" wrapChar="" rightDirectionSymbol=">" reverseDirectionSymbol="0" addDirectionSymbol="0" formatNumbers="0" decimals="3" placeDirectionSymbol="0"/>
           <placement placement="0" preserveRotation="1" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" centroidInside="0" quadOffset="4" xOffset="0" offsetUnits="MM" distMapUnitScale="3x:0,0,0,0,0,0" repeatDistance="0" maxCurvedCharAngleOut="-25" yOffset="0" centroidWhole="0" distUnits="MM" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" fitInPolygonOnly="0" dist="0" offsetType="0" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" maxCurvedCharAngleIn="25" rotationAngle="0" priority="5" repeatDistanceUnits="MM" placementFlags="10"/>
-          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="1" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
+          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="0" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
           <dd_properties>
             <Option type="Map">
               <Option value="" type="QString" name="name"/>
@@ -65,7 +65,7 @@
           </dd_properties>
         </settings>
       </rule>
-      <rule key="{b6d17af0-a7cc-45d0-81a6-6dcf2d9e5f9a}" description="Vertex 2">
+      <rule scalemaxdenom="3000" key="{e4e89f40-8633-4951-b5c5-58373289b251}" scalemindenom="1" description="Vertex 2">
         <settings>
           <text-style fontUnderline="0" namedStyle="Regular" useSubstitutions="0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSizeUnit="Point" textOpacity="1" previewBkgrdColor="#ffffff" fontSize="15" textColor="35,139,69,255" fontWeight="50" fontItalic="0" fontStrikeout="0" blendMode="0" fontCapitals="0" fontLetterSpacing="0" fieldName="format_number( z( point_n( $geometry, 2)),2)" fontFamily="Zurich" isExpression="1" fontWordSpacing="0" multilineHeight="1">
             <text-buffer bufferDraw="1" bufferColor="255,255,255,255" bufferBlendMode="0" bufferOpacity="1" bufferJoinStyle="128" bufferSizeUnits="MM" bufferSize="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="1"/>
@@ -75,7 +75,7 @@
           </text-style>
           <text-format leftDirectionSymbol="&lt;" plussign="0" multilineAlign="4294967295" wrapChar="" rightDirectionSymbol=">" reverseDirectionSymbol="0" addDirectionSymbol="0" formatNumbers="0" decimals="3" placeDirectionSymbol="0"/>
           <placement placement="0" preserveRotation="1" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" centroidInside="0" quadOffset="4" xOffset="0" offsetUnits="MM" distMapUnitScale="3x:0,0,0,0,0,0" repeatDistance="0" maxCurvedCharAngleOut="-25" yOffset="0" centroidWhole="0" distUnits="MM" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" fitInPolygonOnly="0" dist="0" offsetType="0" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" maxCurvedCharAngleIn="25" rotationAngle="0" priority="5" repeatDistanceUnits="MM" placementFlags="10"/>
-          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="1" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
+          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="0" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
           <dd_properties>
             <Option type="Map">
               <Option value="" type="QString" name="name"/>
@@ -96,7 +96,7 @@
           </dd_properties>
         </settings>
       </rule>
-      <rule key="{ee9167e8-7472-4af9-b0a0-93ba6c630088}" description="Vertex 3">
+      <rule scalemaxdenom="3000" key="{add79ba0-391b-4d39-9be9-b6de66082c7c}" scalemindenom="1" description="Vertex 3">
         <settings>
           <text-style fontUnderline="0" namedStyle="Regular" useSubstitutions="0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSizeUnit="Point" textOpacity="1" previewBkgrdColor="#ffffff" fontSize="15" textColor="35,139,69,255" fontWeight="50" fontItalic="0" fontStrikeout="0" blendMode="0" fontCapitals="0" fontLetterSpacing="0" fieldName="format_number( z( point_n( $geometry, 3)),2)" fontFamily="Zurich" isExpression="1" fontWordSpacing="0" multilineHeight="1">
             <text-buffer bufferDraw="0" bufferColor="255,255,255,255" bufferBlendMode="0" bufferOpacity="1" bufferJoinStyle="128" bufferSizeUnits="MM" bufferSize="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="1"/>
@@ -106,7 +106,7 @@
           </text-style>
           <text-format leftDirectionSymbol="&lt;" plussign="0" multilineAlign="4294967295" wrapChar="" rightDirectionSymbol=">" reverseDirectionSymbol="0" addDirectionSymbol="0" formatNumbers="0" decimals="3" placeDirectionSymbol="0"/>
           <placement placement="0" preserveRotation="1" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" centroidInside="0" quadOffset="4" xOffset="0" offsetUnits="MM" distMapUnitScale="3x:0,0,0,0,0,0" repeatDistance="0" maxCurvedCharAngleOut="-25" yOffset="0" centroidWhole="0" distUnits="MM" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" fitInPolygonOnly="0" dist="0" offsetType="0" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" maxCurvedCharAngleIn="25" rotationAngle="0" priority="5" repeatDistanceUnits="MM" placementFlags="10"/>
-          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="1" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
+          <rendering limitNumLabels="0" drawLabels="1" minFeatureSize="0" mergeLines="0" obstacleFactor="1" scaleMax="0" maxNumLabels="2000" upsidedownLabels="0" scaleVisibility="0" displayAll="0" obstacle="0" fontMinPixelSize="3" labelPerPart="0" zIndex="0" fontMaxPixelSize="10000" obstacleType="0" scaleMin="0" fontLimitPixelSize="0"/>
           <dd_properties>
             <Option type="Map">
               <Option value="" type="QString" name="name"/>
