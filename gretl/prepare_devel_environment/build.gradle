@@ -69,7 +69,6 @@ task importLayerHauptrogensteinTop() {
     group = STAGING_GROUP    
 }
 
-
 task createModelSchemaAndTables(type: Ili2pgImportSchema) {
     group = DATAMODEL_GROUP
     description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
