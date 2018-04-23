@@ -139,3 +139,10 @@ Oder sexier mit GRETL:
 ```
 TODO...
 ```
+
+Aufgefallen:
+* Modell höher als DTM? (siehe Screenshot). Jedoch im Detail schwierig zu verifizieren.
+* Überlappende Dreiecke?
+* Dreiecke, die keine Fläche haben (bemerkt mit ilivalidator).
+* Woher stammt das DTM?
+* Abfrageperimeter könnte eventuell bissle Liebe vertragen: Lücken zwischen den einzelnen Gebieten (ob die so sein müssen...?)
