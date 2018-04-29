@@ -294,3 +294,12 @@ task updateRasterTableStupidResult(type: SqlExecutor) {
     sqlFiles = ["sql/update-raster-table-stupid-result.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
 }
+
+task exportStupidResult(type: PostgisRasterExport) {
+    group = IMPORT_EXPORT_GROUP
+    description = "Exportiert die Resultate-Raster-Tabelle in eine GeoTiff-Datei."
+    database = [targetDbUrl, targetDbUser, targetDbPass]
+    sqlFile = "sql/export-raster-table-stupid-result.sql"
+    dataFile = "stupid_result.tif"
+    sqlParameters = [schema_name: dbSchemaRaster]    
+}

@@ -137,12 +137,12 @@ mode=2: ONE_RASTER_PER_TABLE
 Oder sexier mit GRETL:
 
 ```
-TODO...
+gradle -I init.gradle exportStupidResult
 ```
 
 Aufgefallen:
 * Modell höher als DTM? (siehe Screenshot). Jedoch im Detail schwierig zu verifizieren.
-* Überlappende Dreiecke?
+* Überlappende Dreiecke? -> Ist anscheinend so. Falls Layer für Fragestellung entscheindend, braucht es ein wenig Hirnschmalz.
 * Dreiecke, die keine Fläche haben (bemerkt mit ilivalidator).
 * Woher stammt das DTM?
 * Abfrageperimeter könnte eventuell bissle Liebe vertragen: Lücken zwischen den einzelnen Gebieten (ob die so sein müssen...?)
