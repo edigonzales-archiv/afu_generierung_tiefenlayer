@@ -146,3 +146,16 @@ Aufgefallen:
 * Dreiecke, die keine Fläche haben (bemerkt mit ilivalidator).
 * Woher stammt das DTM?
 * Abfrageperimeter könnte eventuell bissle Liebe vertragen: Lücken zwischen den einzelnen Gebieten (ob die so sein müssen...?)
+
+## Bonus - Das Ganze mit Docker
+Docker Container wird auch gleich mitgebildet (-> Tasks zeigen, 'startAndWaitOnHealthyPostgresContainer' ist interessant). Anschliessend Daten aus einem XTF importiert und dann die bekannten Tasks runtergenudelt:
+
+(Organisatorisch so nicht sauber. Ich muss noch das Staging Schema anlegen und die GWS importieren. -> aufräumen.)
+
+```
+gradle -I init.gradle startAndWaitOnHealthyPostgresContainer createModelSchemaAndTables copyDataFromStagingIntoModel createFunctionMakeGrid createQueryPerimeterPointGrid25m createFunctionInterpolateZvalue createDhmPointGrid25m createLockergesteinBasisPointGrid25m createNagraPointGrid25m updateDhmPointGrid25m updateLockergesteinBasisPointGrid25m updateNagraPointGrid25m createRasterSchema createRasterTableDHM25m createRasterTableLockergesteinBasis25m createRasterTableNagra25m updateRasterTableDHM25m updateRasterTableLockergesteinBasis25m updateRasterTableNagra25m createStagingSchemaAndTables importGewaesserchutzzonen createRasterExternGws updateRasterExternGws createFunctionStupidCallback createRasterTableStupidResult updateRasterTableStupidResult exportStupidResult stopDockerContainer
+```
+
+* Task :copyDataFromStagingIntoModel: circa 2min
+* Task :updateNagraPointGrid25m: circa 15min
+* BUILD SUCCESSFUL in 16m 57s

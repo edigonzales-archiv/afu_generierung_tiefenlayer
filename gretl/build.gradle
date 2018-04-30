@@ -1,12 +1,27 @@
 import ch.so.agi.gretl.api.*
 import ch.so.agi.gretl.tasks.*
 
+import java.nio.file.Paths
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.container.DockerRemoveContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer.ExposedPort
+import com.bmuschko.gradle.docker.tasks.container.extras.DockerWaitHealthyContainer
+ 
 apply plugin: 'ch.so.agi.gretl'
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 //def targetDbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com/xanadu2"
 //def targetDbUser = "stefan"
 //def targetDbPass = System.env.targetDbPass
-def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis"
+def sourceDbUrl = "jdbc:postgresql://192.168.50.5/sogis" 
+def sourceDbUser = "ddluser"
+def sourceDbPass = "ddluser"
+
+//def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis" // vagrant
+def targetDbUrl = "jdbc:postgresql://localhost/sogis" // docker
 def targetDbUser = "ddluser"
 def targetDbPass = "ddluser"
 
@@ -14,15 +29,20 @@ def dbSchema = "afu_generierung_tiefenlayer"
 def dbSchemaStaging = "afu_generierung_tiefenlayer_staging"
 def dbSchemaRaster = "afu_generierung_tiefenlayer_raster"
 
+def tagName = "afu-tiefenlayer-db"
+def nameOfContainer = "afu-tiefenlayer-db"
+
 def IMPORT_EXPORT_GROUP = "Import/Export"
 def STAGING_GROUP = "Staging"
 def POINTGRID_GROUP = "Point grid"
 def DATAMODEL_GROUP = "Data model"
 def RASTER_GROUP = "Raster"
+def DOCKER_GROUP = "Docker"
 
 task createStagingSchemaAndTables(type: SqlExecutor) {
     group = STAGING_GROUP    
     description = "Erstellt leere Staging-Tabellen für Shapefile-Import."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-staging.sql"]
     sqlParameters = [schema_name: dbSchemaStaging]
@@ -31,6 +51,7 @@ task createStagingSchemaAndTables(type: SqlExecutor) {
 task importQueryPerimeter(type: ShpImport) {
     group = STAGING_GROUP    
     description = "Import des Abfrageperimeters in die Staging-Tabelle."    
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     schemaName = dbSchemaStaging
     tableName = "abfrageperimeter_kanton"
@@ -57,6 +78,7 @@ task importLayerNagra() {
 task importGewaesserchutzzonen(type: ShpImport) {
     group = STAGING_GROUP    
     description = "Import die Gewässerschutzzonen in die Staging-Tabelle."    
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     schemaName = dbSchemaStaging
     tableName = "externe_daten_gws"
@@ -72,9 +94,10 @@ task importLayerHauptrogensteinTop() {
 task createModelSchemaAndTables(type: Ili2pgImportSchema) {
     group = DATAMODEL_GROUP
     description = "Erstellt das Schema und die leeren Tabellen anhand des INTERLIS-Modelles."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     models = "SO_AFU_Generierung_Tiefenlayer_20180318"
-    modeldir = "http://models.geo.admin.ch;../../ili/" 
+    modeldir = "http://models.geo.admin.ch;../ili/" 
     dbschema = dbSchema
     nameByTopic = true
     createFk = true
@@ -92,7 +115,8 @@ task createModelSchemaAndTables(type: Ili2pgImportSchema) {
 task copyDataFromStagingIntoModel(type: Db2Db) {
     group = DATAMODEL_GROUP
     description = "Kopiert das 3D-Modell und weitere Daten aus dem Staging in die INTERLIS-Modellstruktur."
-    sourceDb =  [targetDbUrl, targetDbUser, targetDbPass]
+    
+    sourceDb =  [sourceDbUrl, sourceDbUser, sourceDbPass]
     targetDb = [targetDbUrl, targetDbUser, targetDbPass]
     transferSets = [
             new TransferSet("sql/copy-abfrageperimeter.sql", dbSchema + ".abfrageperimeter_abfrageperimeter", true),        
@@ -107,6 +131,7 @@ task copyDataFromStagingIntoModel(type: Db2Db) {
 task createFunctionMakeGrid(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Erstellt eine PostgreSQL-Funktion, die ein regelmässiges Punktraster innerhalb einer Geometrie erstellt."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-makegrid-function.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -115,6 +140,7 @@ task createFunctionMakeGrid(type: SqlExecutor) {
 task createFunctionInterpolateZvalue(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Erstellt eine PostgreSQL-Funktion, die den Z-Wert eines Punktes, der innerhalb eines 25D-Dreieckes liegt, interpoliert."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-interpolate-z-value-function.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -123,6 +149,7 @@ task createFunctionInterpolateZvalue(type: SqlExecutor) {
 task createQueryPerimeterPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Generiert das 25m-Punktegrid innerhalb des Abfrageperimeters."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-point-grid-25m-query-perimeter.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -131,6 +158,7 @@ task createQueryPerimeterPointGrid25m(type: SqlExecutor) {
 task createDhmPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Generiert das 25m-Punktegrid innerhalb des DHM."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-point-grid-25m-dhm.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -140,6 +168,7 @@ task createDhmPointGrid25m(type: SqlExecutor) {
 task updateDhmPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Berechnet die Z-Werte des DHM-Punktrasters."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-point-grid-25m-dhm.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -148,6 +177,7 @@ task updateDhmPointGrid25m(type: SqlExecutor) {
 task createNagraPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Generiert das 25m-Punktegrid innerhalb des Nagra-Perimeters."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-point-grid-25m-nagra.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -156,6 +186,7 @@ task createNagraPointGrid25m(type: SqlExecutor) {
 task updateNagraPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Berechnet die Z-Werte des Nagra-Punktrasters.."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-point-grid-25m-nagra.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -164,6 +195,7 @@ task updateNagraPointGrid25m(type: SqlExecutor) {
 task createLockergesteinBasisPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Generiert das 25m-Punktegrid der Ebene Lockergestein_Basis."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-point-grid-25m-lockergestein-basis.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -172,6 +204,7 @@ task createLockergesteinBasisPointGrid25m(type: SqlExecutor) {
 task updateLockergesteinBasisPointGrid25m(type: SqlExecutor) {
     group = POINTGRID_GROUP    
     description = "Berechnet die Z-Werte des Lockergestein-Basis-Punktrasters.."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-point-grid-25m-lockergestein-basis.sql"]
     sqlParameters = [schema_name: dbSchema]
@@ -180,6 +213,7 @@ task updateLockergesteinBasisPointGrid25m(type: SqlExecutor) {
 task exportXTF(type: Ili2pgExport) {
     group = IMPORT_EXPORT_GROUP
     description = "Exportiert sämtliche Daten in eine INTERLIS-Transferdatei."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     models = "SO_AFU_Generierung_Tiefenlayer_20180318"
     modeldir = "http://models.geo.admin.ch;../../ili/" 
@@ -191,9 +225,10 @@ task exportXTF(type: Ili2pgExport) {
 task importXTF(type: Ili2pgImport) {
     group = IMPORT_EXPORT_GROUP
     description = "Import die Grundlagedaten (als INTERLIS-Transferdatei) in ein bestehenden Schema."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     models = "SO_AFU_Generierung_Tiefenlayer_20180318"
-    modeldir = "http://models.geo.admin.ch;../../ili/" 
+    modeldir = "http://models.geo.admin.ch;../ili/" 
     dbschema = dbSchema
     dataFile = "afu-generierung-tiefenlayer.xtf"
     disableValidation = true
@@ -202,6 +237,7 @@ task importXTF(type: Ili2pgImport) {
 task createRasterSchema(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Erstellt das Datenbankschema für die Raster-Tabellen."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-schema.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -210,6 +246,7 @@ task createRasterSchema(type: SqlExecutor) {
 task createRasterExternGws(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Erstellt Raster-Tabelle für Gewässerschutzzonen."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-table-extern-gws.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -218,6 +255,7 @@ task createRasterExternGws(type: SqlExecutor) {
 task updateRasterExternGws(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Rasterisiert die GWS-Vektordaten in eine binäre Raster-Tabelle.\n Achtung: Verwendet DHM-Rastertabelle als Referenz \n und muss aus diesem Grund *nach* dem Erzeugen und Updaten dieser Tabelle erstellt werden."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-extern-gws.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name_staging: dbSchemaStaging]
@@ -226,6 +264,7 @@ task updateRasterExternGws(type: SqlExecutor) {
 task createRasterTableDHM25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Erstellt das Raster-DB-Tabelle für das 25m-DHM."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-table-25m-dhm.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -234,6 +273,7 @@ task createRasterTableDHM25m(type: SqlExecutor) {
 task updateRasterTableDHM25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-DHM-Rastertabelle."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-25m-dhm.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
@@ -242,6 +282,7 @@ task updateRasterTableDHM25m(type: SqlExecutor) {
 task createRasterTableNagra25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Erstellt das Raster-DB-Tabelle für die 25m-Nagra-Ebene."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-table-25m-nagra.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -250,6 +291,7 @@ task createRasterTableNagra25m(type: SqlExecutor) {
 task updateRasterTableNagra25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-Nagra-Rastertabelle."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-25m-nagra.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
@@ -258,6 +300,7 @@ task updateRasterTableNagra25m(type: SqlExecutor) {
 task createRasterTableLockergesteinBasis25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Erstellt das Raster-DB-Tabelle für die 25m-Nagra-Ebene."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-table-25m-lockergestein-basis.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -266,6 +309,7 @@ task createRasterTableLockergesteinBasis25m(type: SqlExecutor) {
 task updateRasterTableLockergesteinBasis25m(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Überträgt den Z-Wert des Vektor-Punktraster den Pixelwerten der 25m-Lockergestein-Basis-Rastertabelle."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-25m-lockergestein-basis.sql"]
     sqlParameters = [schema_name_raster: dbSchemaRaster, schema_name: dbSchema]
@@ -274,6 +318,7 @@ task updateRasterTableLockergesteinBasis25m(type: SqlExecutor) {
 task createFunctionStupidCallback(type: SqlExecutor) {
     group = RASTER_GROUP    
     description = "Erstellt eine Dummy-Raster-MapAlgebra-Callback-Funktion."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-stupic-callback-function.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -282,6 +327,7 @@ task createFunctionStupidCallback(type: SqlExecutor) {
 task createRasterTableStupidResult(type: SqlExecutor) {
     group = RASTER_GROUP    
     description = "Erstellt eine Raster-Tabelle für die Dummy-Callback-Funktion."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/create-raster-table-stupid-result.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -290,6 +336,7 @@ task createRasterTableStupidResult(type: SqlExecutor) {
 task updateRasterTableStupidResult(type: SqlExecutor) {
     group = RASTER_GROUP
     description = "Berechnet die Bohrtiefe anhand einer Callback-Funktion."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFiles = ["sql/update-raster-table-stupid-result.sql"]
     sqlParameters = [schema_name: dbSchemaRaster]
@@ -298,8 +345,68 @@ task updateRasterTableStupidResult(type: SqlExecutor) {
 task exportStupidResult(type: PostgisRasterExport) {
     group = IMPORT_EXPORT_GROUP
     description = "Exportiert die Resultate-Raster-Tabelle in eine GeoTiff-Datei."
+    
     database = [targetDbUrl, targetDbUser, targetDbPass]
     sqlFile = "sql/export-raster-table-stupid-result.sql"
     dataFile = "stupid_result.tif"
     sqlParameters = [schema_name: dbSchemaRaster]    
+}
+
+task buildPostgresDockerImage(type: DockerBuildImage) {
+    group = DOCKER_GROUP
+    description = "Erstellt ein PostGIS Docker Image für die lokale Berechnung."
+    inputDir = file("docker")
+    tag = tagName
+}
+
+task removePostgresDockerContainer(type: DockerRemoveContainer) {
+    description = "Entfernt (falls vorhanden) einen PostGIS Docker Container."
+    group = DOCKER_GROUP
+    
+    targetContainerId { nameOfContainer }
+    force = true
+
+    onError { exception ->
+        if (!exception.message.contains('No such container')) // ignore exception if container does not exist otherwise throw it
+            throw exception
+    }
+}
+
+task createPostgresDockerContainer(type: DockerCreateContainer) {
+    dependsOn 'buildPostgresDockerImage'
+    dependsOn 'removePostgresDockerContainer'
+
+    description = "Erstellt einen PostGIS Docker Container für die lokale Berechnung."
+    group = DOCKER_GROUP
+
+    targetImageId { buildPostgresDockerImage.getImageId() }
+    containerName = nameOfContainer
+    portBindings = ['5432:5432']
+    exposedPorts = [new ExposedPort("tcp", [5432])]
+}
+
+task startPostgresDockerContainer(type: DockerStartContainer) {
+    dependsOn 'createPostgresDockerContainer'
+
+    description = "Started den PostGIS Docker Container."
+    group = DOCKER_GROUP
+
+    targetContainerId { createPostgresDockerContainer.getContainerId() }
+}
+
+task startAndWaitOnHealthyPostgresContainer(type: DockerWaitHealthyContainer) {
+    dependsOn 'startPostgresDockerContainer'
+
+    description = "Wartet bis die Datenbank im PostGIS Docker Container verfügbar ist."
+    group = DOCKER_GROUP
+
+    timeout = 60
+    targetContainerId { createPostgresDockerContainer.getContainerId() }
+}
+
+task stopPostgresDockerContainer(type: DockerStopContainer) {
+    description = "Stoppt den Docker Container."
+    group = DOCKER_GROUP
+
+    targetContainerId { createPostgresDockerContainer.getContainerId() }
 }
