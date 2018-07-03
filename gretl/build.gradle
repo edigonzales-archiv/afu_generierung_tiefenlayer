@@ -20,8 +20,8 @@ def sourceDbUrl = "jdbc:postgresql://192.168.50.5/sogis"
 def sourceDbUser = "ddluser"
 def sourceDbPass = "ddluser"
 
-//def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis" // vagrant
-def targetDbUrl = "jdbc:postgresql://localhost/sogis" // docker
+def targetDbUrl = "jdbc:postgresql://192.168.50.5/sogis" // vagrant
+//def targetDbUrl = "jdbc:postgresql://localhost/sogis" // docker
 def targetDbUser = "ddluser"
 def targetDbPass = "ddluser"
 

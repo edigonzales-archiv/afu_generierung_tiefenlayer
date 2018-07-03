@@ -38,7 +38,7 @@ gradle -I init.gradle createFunctionInterpolateZvalue
 gradle -I init.gradle createDhmPointGrid25m createLockergesteinBasisPointGrid25m createNagraPointGrid25m updateDhmPointGrid25m updateLockergesteinBasisPointGrid25m updateNagraPointGrid25m
 ```
 
-Dauer circa 4:30 Minuten. -> In QGIS Labeling zeigen, v.a. jeder Vertexpunkt eines Dreieckes wird gelabelt. Nun haben wir alles beisammen, um in das Raster-Business einzusteigen.
+Dauer circa 4:30 Minuten. -> In QGIS ("-berechnung") Labeling zeigen (nur DTM), v.a. jeder Vertexpunkt eines Dreieckes wird gelabelt. Nun haben wir alles beisammen, um in das Raster-Business einzusteigen.
 
 Anlegen des Schemas mit den Rastertabellen:
 
